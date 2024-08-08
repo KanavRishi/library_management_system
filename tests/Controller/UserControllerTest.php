@@ -10,13 +10,15 @@ class UserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         // Send a POST request to create a new user
-        $client->request('POST', '/api/users', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $client->request('POST', '/user', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'name' => 'Test User',
             'email' => 'testuser@example.com',
             'role' => 'Member',
-            'password' => 'securepassword'
+            'password' => 'securepassword@123',
+            'created_at'=>new \DateTimeImmutable('now'),
+            'updated_at'=>new \DateTimeImmutable('now')
         ]));
-
+        // dd($client->getResponse());
         // Assert the HTTP status code is 201 (Created)
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
         // Assert the response content is JSON
@@ -28,7 +30,7 @@ class UserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         // Send a GET request to fetch the list of users
-        $client->request('GET', '/api/users');
+        $client->request('GET', '/user');
 
         // Assert the HTTP status code is 200 (OK)
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -41,7 +43,7 @@ class UserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         // Send a GET request to fetch details of a user with ID 1
-        $client->request('GET', '/api/users/1');
+        $client->request('GET', '/user/1/');
 
         // Assert the HTTP status code is 200 (OK)
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -54,13 +56,14 @@ class UserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         // Send a PUT request to update details of the user with ID 1
-        $client->request('PUT', '/api/users/1', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $client->request('PUT', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'name' => 'Updated Test User',
             'email' => 'updatedtestuser@example.com',
             'role' => 'Admin',
-            'password' => 'newsecurepassword'
+            'password' => 'newsecurepassword',
+            'created_at'=>new \DateTimeImmutable('now'),
+            'updated_at'=>new \DateTimeImmutable('now')
         ]));
-
         // Assert the HTTP status code is 200 (OK)
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         // Assert the response content is JSON
@@ -72,10 +75,10 @@ class UserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         // Send a DELETE request to remove the user with ID 1
-        $client->request('DELETE', '/api/users/1');
+        $client->request('DELETE', 'user/2');
 
         // Assert the HTTP status code is 204 (No Content)
-        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }
 ?>

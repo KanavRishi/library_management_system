@@ -53,7 +53,7 @@ class UserController extends AbstractController
         } catch (\ValueError $e) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Invalid status value'
+                'message' => 'Invalid Role value'
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
         $user->setRole($role);
@@ -75,14 +75,6 @@ class UserController extends AbstractController
     {
         $data=json_decode($request->getContent(),true);
         $user=$this->userService->getUserById($id,$data);
-        $duplUser=$this->userService->checkDuplUser($data['email']);
-       if(!$duplUser)
-       {
-            return new JsonResponse([
-                'status'=>true,
-                'message'=>'User Already Exist!!!'
-            ],JsonResponse::HTTP_CREATED);
-       }
         if(!$user)
         {
             return new JsonResponse([
@@ -104,7 +96,7 @@ class UserController extends AbstractController
         } catch (\ValueError $e) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Invalid status value'
+                'message' => 'Invalid role value'
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
         $user->setRole($role);

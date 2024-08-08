@@ -1,17 +1,18 @@
 <?php
-    namespace App\Service;
+namespace App\Service;
 
-    use Doctrine\ORM\EntityManagerInterface;
-    use App\Entity\Book;
-    use App\Repository\BookRepository;
-    use App\Enum\Status;
-    use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Book;
+use App\Entity\Borrow;
+use App\Repository\BookRepository;
+use App\Enum\Status;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-    class BookService
-    {
-        private $entityManager;
-        private $validator;
-        private BookRepository $bookRepository;
+class BookService
+{
+    private $entityManager;
+    private $validator;
+    private BookRepository $bookRepository;
 
     public function __construct(EntityManagerInterface $entityManager,ValidatorInterface $validator,BookRepository $bookRepository)
     {
@@ -67,16 +68,18 @@
     }
     public function checkDuplBook(int $isbn): bool
     {
-        $check_dupl= $this->bookRepository->findByOne(['isbn'=>$isbn]);
+        $check_dupl= $this->bookRepository->findOneBy(['isbn'=>$isbn]);
         if($check_dupl)
         {
             return true;
         }
         return false;
     }
-    // public function borrowWhenAvailable($id): bool
-    // {
-
-    // }
+    public function changeBookStatus(Book $book)
+    {
+        $this->entityManager->persist($book);
+        $this->entityManager->flush();
     }
+    
+}
 ?>

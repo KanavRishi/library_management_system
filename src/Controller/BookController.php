@@ -41,7 +41,7 @@ class BookController extends AbstractController
                     'message' => 'Invalid date format. Expected format: Y-m-d'
                 ], JsonResponse::HTTP_BAD_REQUEST);
             }
-            
+            // dd($publishedDate);
        if(isset($data['title']) && isset($data['author']) && isset($data['isbn']) && isset($data['publisheddate']))
        {
        $book=new Book();
@@ -50,6 +50,7 @@ class BookController extends AbstractController
        $book->setIsbn($data['isbn']);
        $book->setPublishedDate($publishedDate);
        $book->setCreatedAt(new \DateTimeImmutable('now'));
+       $book->setUpdatedAt(new \DateTimeImmutable('now'));
        // Convert string to Status enum
        try {
         $status = Status::from($data['status']);
@@ -61,7 +62,7 @@ class BookController extends AbstractController
     }
     $book->setStatus($status);
        $duplBook=$this->bookService->checkDuplBook($data['isbn']);
-       if(!$duplBook)
+       if($duplBook)
        {
         return new JsonResponse([
             'status'=>true,
@@ -99,7 +100,7 @@ class BookController extends AbstractController
             return new JsonResponse([
                 'status' => 'error',
                 'message' => 'Book not found'
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], JsonResponse::HTTP_BAD_REQUEST);
         }
             
        if (!isset($data['title'], $data['author'], $data['isbn'], $data['publisheddate'], $data['status'])) {
@@ -167,8 +168,9 @@ class BookController extends AbstractController
                 ['status'=>'success',
                 'data'=>$responseData]);
     }
-    return $this->json(['status'=>'Book not Found'],Response::HTTP_NOT_FOUND);
+    return $this->json(['status'=>'Book not Found'],Response::HTTP_OK);
     }
+    // Get Book by Id
     #[Route('/book/{id}/',methods:['GET'])]
     public function getBookById(int $id): JsonResponse
     {
@@ -210,7 +212,7 @@ class BookController extends AbstractController
                     'code' => 'NOT_FOUND',
                     'message' => 'Book not found'
                 ]
-            ], JsonResponse::HTTP_NOT_FOUND);
+            ], JsonResponse::HTTP_BAD_REQUEST);
         }
     }
     // Borrow Book
@@ -319,7 +321,10 @@ class BookController extends AbstractController
         }
 
         $this->borrowService->returnBook($borrow);
-
+        $getBookId=$this->bookService->getBookById($borrow->getBookid()->getId());
+        $getBookId->setStatus(Status::from('available'));
+        $changeStatus=$this->bookService->changeBookStatus($getBookId);
+        
         return new JsonResponse([
             'status' => 'success',
             'message' => 'Book returned successfully'
