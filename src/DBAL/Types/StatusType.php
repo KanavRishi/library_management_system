@@ -11,17 +11,17 @@ class StatusType extends Type
 {
     public const STATUS = 'status';
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getDoctrineTypeMapping('string');
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return Status::from($value);
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (!$value instanceof Status) {
             throw new InvalidArgumentException('Invalid status');
@@ -30,12 +30,12 @@ class StatusType extends Type
         return $value->value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return self::STATUS;
     }
 
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }
